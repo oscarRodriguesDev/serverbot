@@ -146,3 +146,4 @@ const qrServer = http.createServer((req, res) => {
 qrServer.listen(3001, () => {
   console.log(`🔐 QR Server rodando em http://localhost:3001`);
 });
+//alteração importante
