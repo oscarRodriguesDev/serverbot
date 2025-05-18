@@ -74,7 +74,8 @@ function getLocalExternalIP(): string {
 // Define URL base da API automaticamente
 const hostname = getLocalExternalIP();
 const port = 3000;
-const API_URL = `https://nolevel.vercel.app/api/chat`; // agora dinâmico ✅
+const API_URL = `https://nolevel.vercel.app/api/chat`;
+
 
 console.log(`🧠 API configurada para: ${API_URL}`);
 
