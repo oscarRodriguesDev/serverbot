@@ -148,3 +148,14 @@ qrServer.listen(3001, () => {
   console.log(`🔐 QR Server rodando em http://localhost:3001`);
 });
 //alteração importante
+
+async function iniciarConversa(numero: string, mensagem: string) {
+  const contatoComDDI = numero.includes('@c.us') ? numero : `${numero}@c.us`;
+
+  try {
+    await client.sendMessage(contatoComDDI, mensagem);
+    console.log(`✅ Mensagem enviada para ${numero}: "${mensagem}"`);
+  } catch (error) {
+    console.error(`❌ Erro ao iniciar conversa com ${numero}:`, error);
+  }
+}
