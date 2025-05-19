@@ -51,33 +51,23 @@ client.initialize();
 import { Client, LocalAuth, Message } from 'whatsapp-web.js';
 import http from 'http';
 import QRCode from 'qrcode';
-import os from 'os';
 
-// Obter IP local da máquina
-function getLocalExternalIP(): string {
-  const interfaces = os.networkInterfaces();
-
-  for (const name of Object.keys(interfaces)) {
-    const net = interfaces[name];
-    if (!net) continue;
-
-    for (const iface of net) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        return iface.address; // ex: 192.168.0.103 ou IP público da VPS
-      }
-    }
-  }
-
-  return 'localhost'; // fallback
-}
-
-// Define URL base da API automaticamente
-const hostname = getLocalExternalIP();
-const port = 3000;
 const API_URL = `https://nolevel.vercel.app/api/whatsbot`;
 
+//função para comportamento de resposta humanizado
+//função para controle o delay de resposta para simular o tempo de resposta humano randomico
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-console.log(`🧠 API configurada para: ${API_URL}`);
+async function esperarComoHumano() {
+   const delayMs = Math.floor(Math.random()*10000); // Tempo de espera entre 0 e 10 segundos
+  await delay(delayMs);
+}
+
+
+
+
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -91,7 +81,8 @@ let qrCodeImage: string | null = null;
 
 client.on('qr', async (qr: string) => {
   qrCodeImage = await QRCode.toDataURL(qr);
-  console.log('📲 QR code atualizado. Acesse http://localhost:3001 para visualizar.');
+  var serverUrl = process.env.SERVER_URL || 'http://localhost:3001';
+  console.log(`📲acesse ${serverUrl} para acessar...` );
 });
 
 client.on('ready', () => {
@@ -104,6 +95,7 @@ client.on('message', async (msg: Message) => {
   const sessionId = msg.from;
 
   try {
+    esperarComoHumano()
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -145,10 +137,15 @@ const qrServer = http.createServer((req, res) => {
 });
 
 qrServer.listen(3001, () => {
-  console.log(`🔐 QR Server rodando em http://localhost:3001`);
+  var serverUrl = process.env.SERVER_URL || 'http://localhost:3001';
+  console.log(`📲acesse ${serverUrl} para acessar...` );
 });
-//alteração importante
 
+
+
+
+
+//alteração importante
 async function iniciarConversa(numero: string, mensagem: string) {
   const contatoComDDI = numero.includes('@c.us') ? numero : `${numero}@c.us`;
 
