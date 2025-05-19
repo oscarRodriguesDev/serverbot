@@ -52,7 +52,8 @@ import { Client, LocalAuth, Message } from 'whatsapp-web.js';
 import http from 'http';
 import QRCode from 'qrcode';
 
-const API_URL = `https://nolevel.vercel.app/api/whatsbot`;
+const url ='https://nolevel.vercel.app/'
+const API_URL = `http://localhost:3000/api/whatsbot`;
 
 //função para comportamento de resposta humanizado
 //função para controle o delay de resposta para simular o tempo de resposta humano randomico
@@ -62,6 +63,7 @@ function delay(ms: number) {
 
 async function esperarComoHumano() {
    const delayMs = Math.floor(Math.random()*10000); // Tempo de espera entre 0 e 10 segundos
+   console.log("delay de atendimento", delayMs);
   await delay(delayMs);
 }
 
@@ -95,7 +97,7 @@ client.on('message', async (msg: Message) => {
   const sessionId = msg.from;
 
   try {
-    esperarComoHumano()
+   esperarComoHumano()
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -105,9 +107,11 @@ client.on('message', async (msg: Message) => {
     const data: any = await response.json();
 
     if (data.response) {
-      await msg.reply(data.response);
+    
+      await client.sendMessage(msg.from, data.response);
     } else {
-      await msg.reply('Desculpe, houve um erro ao processar sua solicitação.');
+     
+      await client.sendMessage(msg.from, 'Desculpe, houve um erro ao processar sua solicitação.');
     }
   } catch (error) {
     console.error('❌ Erro ao chamar a API:', error);
